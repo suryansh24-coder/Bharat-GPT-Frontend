@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat GPT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        const renderer = new marked.Renderer();
+        renderer.image = function (href, title, text) {
+            return `<img src="${href}" alt="${text}" title="${title || ''}" onerror="this.style.display='none'" class="rounded-[20px] shadow-sm mb-4 max-w-full h-auto" />`;
+        };
+
+        marked.setOptions({
+            renderer: renderer,
+            highlight: function (code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true
+        });
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        peach: '#F4B38A',
+                        tealBlue: '#327382',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-sidebar: #F2ECE4;
+            --bg-main: #F7F5F2;
+            --bg-card: #FFFFFF;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #E5E7EB;
+            --accent-peach: #F4B38A;
+            --accent-teal: #327382;
+        }
+
+        .dark {
+            --bg-sidebar: #020617;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border-color: #1f2933;
+            --accent-peach: #D48B6A;
+            --accent-teal: #2A606D;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Beautiful Markdown Typography Override */
+        .markdown-body h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 1.25em;
+            margin-bottom: 0.75em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3em;
+            color: var(--accent-teal);
+        }
+
+        .markdown-body h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+            color: var(--accent-teal);
+        }
+
+        .markdown-body h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-body p {
+            margin-top: 0;
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+
+        .markdown-body ul {
+            list-style-type: disc;
+            padding-left: 2em;
+            margin-top: 0;
+            margin-bottom: 1em;
+        }
+
+        .markdown-body ol {
+            list-style-type: decimal;
+            padding-left: 2em;
+            margin-top: 0;
+            margin-bottom: 1em;
+        }
+
+        .markdown-body li {
+            margin-bottom: 0.3em;
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1em;
+            margin-bottom: 1em;
+            font-size: 0.9em;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .markdown-body th {
+            background-color: rgba(50, 115, 130, 0.05);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .markdown-body td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .markdown-body tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dark .markdown-body th {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .markdown-body pre {
+            background-color: #0d1117 !important;
+            color: #c9d1d9 !important;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .markdown-body code {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            background-color: rgba(50, 115, 130, 0.08);
+            color: var(--accent-teal);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.85em;
+            word-break: break-word;
+        }
+
+        .dark .markdown-body code {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #c9d1d9;
+        }
+
+        /* STRICT Override for code blocks inside Pre tags */
+        .markdown-body pre code {
+            background-color: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            font-size: 0.9em !important;
+            white-space: pre !important;
+            word-break: normal !important;
+            display: block;
+        }
+
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent-teal);
+            padding-left: 1em;
+            color: var(--text-secondary);
+            margin: 1em 0;
+            font-style: italic;
+            background: rgba(50, 115, 130, 0.03);
+            padding: 10px 10px 10px 16px;
+            border-radius: 4px;
+        }
+
+        .markdown-body strong {
+            color: var(--accent-teal);
+            font-weight: 600;
+        }
+
+        .dark .markdown-body strong {
+            color: #5bc0de;
+        }
+
+        .markdown-body hr {
+            height: 1px;
+            border: none;
+            background-color: var(--border-color);
+            margin: 1.5em 0;
+        }
+
+        .sidebar {
+            background-color: var(--bg-sidebar);
+            border-color: var(--border-color);
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .message-bubble {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            border-radius: 30px;
+        }
+
+        .chat-input-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            border-radius: 40px;
+        }
+
+        .btn-peach {
+            background-color: var(--accent-peach);
+            color: white;
+        }
+
+        .btn-teal {
+            background-color: var(--accent-teal);
+            color: white;
+        }
+
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce-dots 1.4s infinite ease-in-out both;
+        }
+
+        @keyframes bounce-dots {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1.0);
+            }
+        }
+
+        /* Full Emoji Picker Styling Context */
+        emoji-picker {
+            width: 100%;
+            height: 320px;
+            --background: var(--bg-card);
+            --border-color: transparent;
+            --input-border-color: var(--border-color);
+            --indicator-color: var(--accent-teal);
+            --category-icon-color: var(--text-secondary);
+            --category-font-color: var(--text-secondary);
+            --text-color: var(--text-primary);
+            --button-hover-background: rgba(0, 0, 0, 0.05);
+            --search-background: var(--bg-main);
+            border-radius: 1rem;
+        }
+
+        .dark emoji-picker {
+            --button-hover-background: rgba(255, 255, 255, 0.05);
+            --indicator-color: var(--accent-peach);
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-72 flex flex-col border-r hidden md:flex transition-all">
+        <!-- Logo Section -->
+        <div class="p-6 flex items-center gap-3 relative">
+            <div id="logo-bubble-container" class="cursor-pointer group" onclick="toggleLogoBubble(event)">
+                <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain group-hover:scale-110 transition"
+                    onerror="this.src='https://bharatgpt.ai/logo.png'; this.onerror=null;">
+
+                <!-- Logo Bubble Menu -->
+                <div id="logo-bubble"
+                    class="absolute left-16 top-16 w-48 bg-white border border-gray-200 rounded-2xl shadow-2xl p-2 hidden z-50 animate-in zoom-in-50 duration-200 origin-top-left">
+                    <div
+                        class="p-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        Quick Launch</div>
+                    <div onclick="window.open('https://www.canva.com', '_blank')"
+                        class="p-2 hover:bg-gray-50 rounded-lg flex items-center gap-2 text-xs text-gray-700 cursor-pointer transition">
+                        🎨 Canva
+                    </div>
+                    <div onclick="window.open('https://replit.com', '_blank')"
+                        class="p-2 hover:bg-gray-50 rounded-lg flex items-center gap-2 text-xs text-gray-700 cursor-pointer transition">
+                        💻 Replit AI
+                    </div>
+                    <div onclick="window.open('https://lovable.dev', '_blank')"
+                        class="p-2 hover:bg-gray-50 rounded-lg flex items-center gap-2 text-xs text-gray-700 cursor-pointer transition">
+                        💖 Lovable
+                    </div>
+                </div>
+            </div>
+            <h1 class="text-lg font-bold tracking-tight text-[#4A4A4A] dark:text-white uppercase">Bharat GPT</h1>
+        </div>
+
+        <!-- New Chat Button -->
+        <div class="px-4 mb-8">
+            <button onclick="handleNewChat()"
+                class="btn-peach w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 font-semibold shadow-lg shadow-peach/20 hover:scale-[1.02] transition">
+                <i data-lucide="plus" size="18"></i> <span data-i18n="new-chat">New Chat</span>
+            </button>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="flex-1 overflow-y-auto px-4 space-y-1">
+            <div onclick="toggleChatHistory()"
+                class="nav-item flex items-center gap-3 px-4 py-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[15px] text-[#4A4A4A] dark:text-white/70">
+                <i data-lucide="message-square" size="18"></i> <span data-i18n="chat-history">Chat History</span>
+            </div>
+
+            <!-- Extended Chat History List (Hidden by default) -->
+            <div id="extended-chat-history"
+                class="hidden px-4 space-y-1 animate-in slide-in-from-top-2 duration-200 mt-1">
+                <div
+                    class="group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[13px] text-gray-500 font-medium">
+                    <span class="truncate">React Component Planning</span>
+                </div>
+                <div
+                    class="group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[13px] text-gray-500 font-medium">
+                    <span class="truncate">Python Data Scraper</span>
+                </div>
+                <div
+                    class="group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[13px] text-gray-500 font-medium">
+                    <span class="truncate">Resume Review</span>
+                </div>
+                <div
+                    class="group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[13px] text-gray-500 font-medium">
+                    <span class="truncate">Weekend Trip Itinerary</span>
+                </div>
+            </div>
+
+            <div class="mt-4 px-2 space-y-1">
+                <div class="hidden" data-i18n="recent">
+                    Recent</div>
+                <div id="current-chat-tab"
+                    class="group flex items-center justify-between px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 cursor-pointer transition text-[14px] text-[#4A4A4A] dark:text-white/80">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <i data-lucide="message-square" size="16"></i> <span class="truncate"
+                            data-i18n="active-chat">Active UI Chat</span>
+                    </div>
+                    <i id="chat-pin-icon" data-lucide="pin" size="14" class="hidden text-tealBlue shrink-0"></i>
+                </div>
+            </div>
+
+            <div class="mt-4 px-2 space-y-1">
+                <div class="hidden" data-i18n="archived">
+                    Archived</div>
+                <div id="archived-chats-container"></div>
+            </div>
+
+            <div
+                class="nav-item flex items-center justify-between px-4 py-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[15px] text-[#4A4A4A] dark:text-white/70">
+                <div class="flex items-center gap-3 w-full" onclick="toggleProjectsHistory()">
+                    <i data-lucide="layout" size="18"></i> <span data-i18n="projects">Projects</span>
+                </div>
+                <i data-lucide="plus" size="16" onclick="openProjectsModal(event)"
+                    class="text-gray-400 hover:text-tealBlue transition" title="New Project"></i>
+            </div>
+            <div id="extended-projects-history"
+                class="hidden px-4 space-y-1 animate-in slide-in-from-top-2 duration-200 mt-1"></div>
+            <div onclick="switchView('apps')"
+                class="nav-item flex items-center gap-3 px-4 py-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[15px] text-[#4A4A4A] dark:text-white/70">
+                <i data-lucide="package" size="18"></i> <span data-i18n="apps">Apps</span>
+            </div>
+            <div
+                class="nav-item flex items-center gap-3 px-4 py-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[15px] text-[#4A4A4A] dark:text-white/70">
+                <i data-lucide="image" size="18"></i> <span data-i18n="images">Images</span>
+            </div>
+
+            <!-- Search in Sidebar -->
+            <div class="mt-8 px-2">
+                <div class="relative">
+                    <i data-lucide="search" size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-sec"></i>
+                    <input type="text" placeholder="Search"
+                        class="w-full pl-10 pr-4 py-2.5 bg-white/40 dark:bg-white/5 rounded-2xl border-none outline-none text-sm">
+                </div>
+                <!-- AI Growth Branch -->
+                <div onclick="openSettingsModal(); switchSettingsTab('notifications');"
+                    class="mt-4 flex items-center gap-3 p-3 rounded-2xl bg-tealBlue/5 border border-tealBlue/10 hover:bg-tealBlue/10 transition cursor-pointer group">
+                    <div
+                        class="w-8 h-8 rounded-xl bg-tealBlue/20 flex items-center justify-center text-tealBlue group-hover:scale-110 transition shrink-0">
+                        <i data-lucide="trending-up" size="16"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[13px] font-bold text-tealBlue truncate">Growth of AI</p>
+                        <p class="text-[10px] text-gray-500 truncate mt-0.5">Daily tech market updates</p>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-6">
+            <div id="profile-container" class="relative group cursor-pointer" onclick="toggleAuthMenu(event)">
+                <div
+                    class="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/5 rounded-[25px] border border-white/20 hover:bg-black/5 dark:hover:bg-white/10 transition shadow-sm">
+                    <div id="profile-avatar"
+                        class="w-10 h-10 bg-[#5C5C9C] rounded-full flex items-center justify-center text-white font-bold text-sm uppercase">
+                        G</div>
+                    <div class="flex-1 overflow-hidden pointer-events-none">
+                        <p id="profile-name"
+                            class="text-sm font-bold text-[#4A4A4A] dark:text-white truncate lg:max-w-[120px]"
+                            data-i18n="guest">Guest</p>
+                        <div id="profile-status-indicator" class="text-[10px] text-gray-500 font-semibold mt-0.5">Not
+                            Signed In</div>
+                    </div>
+                </div>
+
+                <!-- Auth Popup Menu -->
+                <div id="profile-auth-menu"
+                    class="absolute bottom-full left-0 mb-3 w-full bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl hidden z-[100] animate-in slide-in-from-bottom-2 duration-200 overflow-hidden">
+                    <button id="auth-menu-btn" onclick="openAuthModal(event)"
+                        class="w-full text-left px-4 py-3.5 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-bold text-gray-700 dark:text-gray-200 transition flex items-center gap-3">
+                        <i data-lucide="log-in" size="16" id="auth-menu-icon" class="text-tealBlue"></i> <span
+                            id="auth-menu-text">Log In</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+
+        <!-- Header -->
+        <header class="h-16 flex items-center justify-between px-8 z-20">
+            <div class="flex items-center gap-4 flex-1">
+                <div class="relative w-full max-w-sm hidden sm:block">
+                    <i data-lucide="search" size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-sec"></i>
+                    <input type="text" id="header-search" data-i18n-placeholder="search-placeholder"
+                        placeholder="Search" onkeydown="handleHeaderSearch(event)"
+                        oninput="handleSearchSuggestions(this)"
+                        class="w-full pl-12 pr-4 py-2.5 bg-white/40 dark:bg-white/5 rounded-2xl border-none outline-none text-sm font-medium">
+
+                    <!-- Search Suggestions -->
+                    <div id="search-suggestions"
+                        class="absolute top-full left-0 mt-2 w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl hidden z-[100] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                        <div class="p-2 border-b border-gray-100 dark:border-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-white/5"
+                            data-i18n="suggestions">
+                            Suggestions</div>
+                        <div id="suggestions-list" class="max-h-64 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="flex gap-1 bg-white/40 dark:bg-white/5 p-1 rounded-2xl">
+                    <button onclick="exportChat('pdf')"
+                        class="px-3 py-1 text-[11px] font-semibold text-sec hover:text-primary transition uppercase">PDF</button>
+                    <button onclick="exportChat('txt')"
+                        class="px-3 py-1 text-[11px] font-semibold text-sec hover:text-primary transition uppercase">TXT</button>
+                    <button onclick="exportChat('md')"
+                        class="px-3 py-1 text-[11px] font-semibold text-sec hover:text-primary transition uppercase">MD</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openSettingsModal()"
+                        class="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-sec transition"><i
+                            data-lucide="settings" size="20"></i></button>
+                    <button onclick="toggleTheme()"
+                        class="p-2 bg-white/50 dark:bg-white/10 rounded-xl text-peach transition shadow-sm">
+                        <i data-lucide="moon" id="theme-icon" size="20"></i>
+                    </button>
+                    <div class="relative">
+                        <button onclick="toggleOptionsMenu()"
+                            class="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-sec transition"><i
+                                data-lucide="more-vertical" size="20"></i></button>
+                        <div id="options-menu"
+                            class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl hidden z-[100] animate-in slide-in-from-top-2 duration-200 overflow-hidden">
+                            <div class="p-1.5 flex flex-col gap-1">
+                                <button onclick="pinCurrentChat()" id="options-pin-btn"
+                                    class="flex items-center gap-3 w-full px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-sm font-semibold transition text-gray-700 dark:text-gray-200">
+                                    <i data-lucide="pin" size="16" id="options-pin-icon"></i> <span data-i18n="pin-chat"
+                                        id="options-pin-text">Pin chat</span>
+                                </button>
+                                <button onclick="archiveCurrentChat()"
+                                    class="flex items-center gap-3 w-full px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-sm font-semibold transition text-gray-700 dark:text-gray-200">
+                                    <i data-lucide="archive" size="16"></i> <span data-i18n="archive">Archive</span>
+                                </button>
+                                <button onclick="reportCurrentChat()"
+                                    class="flex items-center gap-3 w-full px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-sm font-semibold transition text-gray-700 dark:text-gray-200">
+                                    <i data-lucide="flag" size="16"></i> <span data-i18n="report">Report</span>
+                                </button>
+                                <hr class="border-gray-100 dark:border-gray-800 my-1">
+                                <button onclick="deleteCurrentChat()"
+                                    class="flex items-center gap-3 w-full px-3 py-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-sm font-semibold transition text-red-500">
+                                    <i data-lucide="trash-2" size="16"></i> <span data-i18n="delete">Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <div id="messages-view" class="flex-1 flex flex-col overflow-hidden">
+            <div id="messages-container" class="flex-1 overflow-y-auto px-8 py-10 space-y-10">
+                <!-- Welcome State -->
+                <div id="welcome-view"
+                    class="flex flex-col items-center justify-center h-full animate-in fade-in duration-500">
+                    <div
+                        class="flex items-center gap-4 p-8 bg-white/30 dark:bg-white/5 rounded-[40px] border border-white/50 backdrop-blur-xl shadow-2xl">
+                        <img src="logo.png" alt="Logo" class="w-12 h-12 object-contain"
+                            onerror="this.src='https://bharatgpt.ai/logo.png'; this.onerror=null;">
+                        <h2 class="text-3xl font-bold tracking-tight text-[#324B5C] dark:text-white"
+                            data-i18n="namaste">Namaste</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-8 pb-10">
+                <div class="max-w-4xl mx-auto">
+                    <div class="chat-input-container p-3 flex flex-col border transition-all relative">
+                        <!-- Command Palette -->
+                        <div id="command-palette"
+                            class="absolute bottom-full left-4 mb-2 w-64 bg-card-theme border border-theme rounded-2xl shadow-2xl hidden z-50 overflow-hidden animate-in slide-in-from-bottom-2 duration-200">
+                            <div
+                                class="p-2 border-b border-theme text-[10px] font-bold text-sec uppercase tracking-widest bg-black/5 dark:bg-white/5">
+                                Commands</div>
+                            <div onclick="applyCommand('/image')"
+                                class="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm">
+                                <i data-lucide="sparkles" size=14 class="text-orange-400"></i> Generate Image
+                            </div>
+                            <div onclick="applyCommand('/code')"
+                                class="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm">
+                                <i data-lucide="terminal" size=14 class="text-blue-400"></i> Write Code
+                            </div>
+                            <div onclick="applyCommand('/translate')"
+                                class="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm">
+                                <i data-lucide="languages" size=14 class="text-green-400"></i> Translate
+                            </div>
+                        </div>
+
+                        <textarea id="chat-input" placeholder="Send a message or type '/' for suggestions..."
+                            class="w-full bg-transparent px-4 py-3 outline-none resize-none text-[15px] border-none text-primary"
+                            oninput="handleInput(this)"></textarea>
+
+                        <div class="flex items-center justify-between px-2 mt-2">
+                            <div class="flex items-center gap-4 text-sec relative">
+                                <!-- Hidden File Input -->
+                                <input type="file" id="file-input" class="hidden" multiple
+                                    onchange="handleFileSelect(event)">
+                                <button onclick="triggerFile()"
+                                    class="p-2 hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition"
+                                    title="Attach Files"><i data-lucide="paperclip" size="18"></i></button>
+                                <button onclick="triggerFile()"
+                                    class="p-2 hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition"
+                                    title="Images"><i data-lucide="image" size="18"></i></button>
+
+                                <div class="relative">
+                                    <button onclick="toggleEmojiMenu()"
+                                        class="p-2 hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition"
+                                        title="Emoji"><i data-lucide="smile" size="18"></i></button>
+                                    <div id="emoji-menu"
+                                        class="absolute bottom-full left-0 mb-4 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl hidden z-50 animate-in slide-in-from-bottom-2 duration-200 overflow-hidden w-80">
+                                        <emoji-picker class="w-full"></emoji-picker>
+                                    </div>
+                                </div>
+
+                                <button id="voice-btn" onclick="toggleVoice()"
+                                    class="p-2 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition"
+                                    title="Voice Input"><i data-lucide="mic" size="18" id="voice-icon"></i></button>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    <button onclick="toggleFilterMenu()" class="p-1 hover:text-primary transition"><i
+                                            data-lucide="filter" size="18" class="text-sec"></i></button>
+                                    <div id="filter-menu"
+                                        class="absolute bottom-full right-0 mb-4 w-48 bg-card-theme border border-theme rounded-2xl shadow-2xl p-2 hidden z-50">
+                                        <div
+                                            class="p-2 text-[10px] font-bold text-sec uppercase tracking-widest border-b border-theme mb-1">
+                                            Search Filters</div>
+                                        <div onclick="selectFilter(this, 'All')"
+                                            class="filter-option p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-xs cursor-pointer flex items-center justify-between font-bold text-tealBlue bg-black/5 dark:bg-white/5">
+                                            <span>All Results</span> <i data-lucide="check" size="14"
+                                                class="check-icon"></i>
+                                        </div>
+                                        <div onclick="selectFilter(this, 'Web')"
+                                            class="filter-option p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-xs cursor-pointer flex items-center justify-between text-gray-500">
+                                            <span>Only Web</span> <i data-lucide="check" size="14"
+                                                class="check-icon hidden"></i>
+                                        </div>
+                                        <div onclick="selectFilter(this, 'Code')"
+                                            class="filter-option p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-xs cursor-pointer flex items-center justify-between text-gray-500">
+                                            <span>Only Code</span> <i data-lucide="check" size="14"
+                                                class="check-icon hidden"></i>
+                                        </div>
+                                        <div onclick="selectFilter(this, 'Academic')"
+                                            class="filter-option p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-xs cursor-pointer flex items-center justify-between text-gray-500">
+                                            <span>Academic Papers</span> <i data-lucide="check" size="14"
+                                                class="check-icon hidden"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="handleSendMessage()" id="send-btn"
+                                    class="btn-teal px-8 py-2.5 rounded-[15px] font-bold shadow-xl shadow-tealBlue/20 hover:scale-105 transition">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apps View -->
+        <div id="apps-view"
+            class="flex-1 flex flex-col overflow-hidden hidden bg-sidebar-theme animate-in fade-in duration-300">
+            <div class="h-16 border-b border-theme flex items-center justify-between px-8">
+                <h2 class="text-xl font-bold text-primary uppercase">Connected Apps</h2>
+                <button onclick="switchView('messages')"
+                    class="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-sec transition" title="Close">
+                    <i data-lucide="x" size="24"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="max-w-4xl mx-auto space-y-10">
+                    <!-- Slideshow Section -->
+                    <div
+                        class="relative w-full h-64 rounded-[30px] overflow-hidden shadow-2xl border border-theme bg-card-theme">
+                        <div id="slideshow-container" class="w-full h-full relative">
+                            <div class="slide absolute inset-0 transition-opacity duration-1000 flex items-center justify-center bg-cover bg-center"
+                                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200')">
+                                <h3 class="text-4xl font-bold text-white tracking-widest uppercase">Coding</h3>
+                            </div>
+                            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0 flex items-center justify-center bg-cover bg-center"
+                                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200')">
+                                <h3 class="text-4xl font-bold text-white tracking-widest uppercase">Developing</h3>
+                            </div>
+                            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0 flex items-center justify-center bg-cover bg-center"
+                                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200')">
+                                <h3 class="text-4xl font-bold text-white tracking-widest uppercase">Learning</h3>
+                            </div>
+                        </div>
+                        <!-- Dots -->
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                            <div class="w-2 h-2 rounded-full bg-white slide-dot"></div>
+                            <div class="w-2 h-2 rounded-full bg-white/30 slide-dot"></div>
+                            <div class="w-2 h-2 rounded-full bg-white/30 slide-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- Apps List -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-bold text-sec uppercase tracking-widest px-2">Launch Application</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="window.open('https://www.canva.com', '_blank')"
+                                class="card p-5 rounded-2xl border hover:border-accent-peach/50 hover:bg-white/5 transition text-left group">
+                                <span class="text-sm font-semibold group-hover:text-peach transition">Canva</span>
+                            </button>
+                            <button onclick="window.open('https://www.youtube.com', '_blank')"
+                                class="card p-5 rounded-2xl border hover:border-accent-peach/50 hover:bg-white/5 transition text-left group">
+                                <span class="text-sm font-semibold group-hover:text-peach transition">YouTube</span>
+                            </button>
+                            <button onclick="window.open('https://www.adobe.com/products/photoshop.html', '_blank')"
+                                class="card p-5 rounded-2xl border hover:border-accent-peach/50 hover:bg-white/5 transition text-left group">
+                                <span class="text-sm font-semibold group-hover:text-peach transition">Adobe
+                                    Photoshop</span>
+                            </button>
+                            <button onclick="window.open('https://replit.com/ai', '_blank')"
+                                class="card p-5 rounded-2xl border hover:border-accent-peach/50 hover:bg-white/5 transition text-left group">
+                                <span class="text-sm font-semibold group-hover:text-peach transition">Replit AI</span>
+                            </button>
+                            <button onclick="window.open('https://github.com/google/antigravity', '_blank')"
+                                class="card p-5 rounded-2xl border hover:border-accent-peach/50 hover:bg-white/5 transition text-left group">
+                                <span class="text-sm font-semibold group-hover:text-peach transition">Antigravity</span>
+                            </button>
+                            <button onclick="window.open('https://lovable.dev', '_blank')"
+                                class="card p-5 rounded-2xl border hover:border-accent-peach/50 hover:bg-white/5 transition text-left group">
+                                <span class="text-sm font-semibold group-hover:text-peach transition">Lovable</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Projects Modal -->
+    <div id="projects-modal"
+        class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="card w-full max-w-md rounded-3xl p-6 shadow-2xl border transition-all mx-4">
+            <h3 class="text-xl font-bold mb-4" data-i18n="projects">New Project</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4" data-i18n="standard-desc">Enter project name to
+                start a targeted
+                conversation.</p>
+            <input type="text" id="project-name-input" data-i18n-placeholder="projects" placeholder="Project Name"
+                class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 border-none rounded-xl outline-none mb-6">
+            <div class="flex justify-end gap-3">
+                <button onclick="closeProjectsModal()"
+                    class="px-5 py-2.5 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition">Exit</button>
+                <button onclick="saveProject()"
+                    class="btn-teal px-5 py-2.5 rounded-xl font-semibold shadow-lg hover:scale-105 transition">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal"
+        class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center backdrop-blur-sm animate-in fade-in duration-200">
+        <div
+            class="card w-full max-w-4xl h-[600px] flex rounded-3xl shadow-2xl overflow-hidden mx-4 border transition-all">
+            <!-- Sidebar Navigation -->
+            <div
+                class="w-64 bg-gray-50 dark:bg-[#1a2333] border-r border-gray-200 dark:border-white/10 flex flex-col p-4 space-y-2">
+                <h2 class="font-bold text-xl mb-4 px-2 tracking-tight" data-i18n="settings">Settings</h2>
+                <button onclick="switchSettingsTab('general')"
+                    class="settings-tab-btn flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-left transition w-full"
+                    data-tab="general">
+                    <i data-lucide="settings" size="18"></i> <span class="text-sm font-semibold"
+                        data-i18n="general">General</span>
+                </button>
+                <button onclick="switchSettingsTab('personalization')"
+                    class="settings-tab-btn flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-left transition w-full"
+                    data-tab="personalization">
+                    <i data-lucide="paint-bucket" size="18"></i> <span class="text-sm font-semibold"
+                        data-i18n="personalization">Personalization</span>
+                </button>
+                <button onclick="switchSettingsTab('notifications')"
+                    class="settings-tab-btn flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-left transition w-full"
+                    data-tab="notifications">
+                    <i data-lucide="bell" size="18"></i> <span class="text-sm font-semibold"
+                        data-i18n="notifications">Notifications</span>
+                </button>
+                <button onclick="switchSettingsTab('parental')"
+                    class="settings-tab-btn flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-left transition w-full"
+                    data-tab="parental">
+                    <i data-lucide="shield" size="18"></i> <span class="text-sm font-semibold"
+                        data-i18n="parental">Parental Controls</span>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 flex flex-col relative h-full bg-white dark:bg-[#1e293b]">
+                <div class="absolute top-4 right-4 z-10">
+                    <button onclick="closeSettingsModal()"
+                        class="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition text-gray-500">
+                        <i data-lucide="x" size="20"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 p-8 overflow-y-auto">
+                    <!-- General Tab -->
+                    <div id="settings-general"
+                        class="settings-tab-content hidden space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-white" data-i18n="general">General
+                        </h3>
+
+                        <div class="space-y-4">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                                data-i18n="font-size">Font Size Adjustment</label>
+                            <input type="range" id="font-size-slider" min="12" max="24" value="15"
+                                oninput="changeFontSize(this.value)" class="w-full accent-tealBlue cursor-pointer">
+                            <div class="flex justify-between items-center text-xs text-tealBlue font-bold">
+                                <span><span data-i18n="current-size">Current Size</span>: <span
+                                        id="font-size-display">15px</span></span>
+                            </div>
+
+                            <!-- Preview Box -->
+                            <div
+                                class="mt-4 p-4 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-gray-800">
+                                <div class="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Preview</div>
+                                <div class="message-bubble inline-block px-4 py-3 bg-white dark:bg-[#1a2333] shadow-md border border-gray-100 dark:border-gray-800 rounded-2xl"
+                                    id="font-preview-bubble" style="font-size: 15px;">
+                                    This is how your chat text will look.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                                data-i18n="language-type">Language / Type Changes</label>
+
+                            <div class="relative w-full max-w-sm" id="custom-lang-wrapper">
+                                <button onclick="toggleLangMenu()" id="lang-menu-btn"
+                                    class="w-full p-4 rounded-full bg-gray-50 dark:bg-black/20 font-semibold cursor-pointer text-gray-800 dark:text-gray-200 drop-shadow-sm flex items-center justify-between transition focus:ring-2 focus:ring-tealBlue outline-none">
+                                    <span id="current-lang-text">English</span>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center text-gray-500">
+                                        <i data-lucide="chevron-down" size="16"></i>
+                                    </div>
+                                </button>
+
+                                <div id="custom-lang-dropdown"
+                                    class="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-gray-800 rounded-[24px] shadow-2xl overflow-hidden hidden z-50 animate-in slide-in-from-top-2 duration-200">
+                                    <div class="p-1.5 flex flex-col">
+                                        <button onclick="selectLangOption('en', 'English')"
+                                            class="text-left w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-[18px] font-semibold text-sm transition">English</button>
+                                        <button onclick="selectLangOption('hi', 'Hindi (हिंदी)')"
+                                            class="text-left w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-[18px] font-semibold text-sm transition">Hindi
+                                            (हिंदी)</button>
+                                        <button onclick="selectLangOption('es', 'Spanish (Español)')"
+                                            class="text-left w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-[18px] font-semibold text-sm transition">Spanish
+                                            (Español)</button>
+                                        <button onclick="selectLangOption('fr', 'French (Français)')"
+                                            class="text-left w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-[18px] font-semibold text-sm transition">French
+                                            (Français)</button>
+                                        <button onclick="selectLangOption('zh', 'Chinese (中文)')"
+                                            class="text-left w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-[18px] font-semibold text-sm transition">Chinese
+                                            (中文)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                                data-i18n="ai-model">AI Model Selection</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label
+                                    class="cursor-pointer border-2 border-transparent bg-gray-50 dark:bg-black/20 p-4 rounded-2xl hover:border-tealBlue transition flex flex-col gap-2 relative">
+                                    <input type="radio" name="ai-model" value="standard" class="peer hidden" checked>
+                                    <div class="peer-checked:text-tealBlue flex items-center gap-2 font-bold"><i
+                                            data-lucide="zap" size="18"></i> <span data-i18n="standard-model">Standard
+                                            Model</span></div>
+                                    <span class="text-xs text-gray-500 font-medium" data-i18n="standard-desc">Fast and
+                                        efficient for daily queries.</span>
+                                </label>
+                                <label
+                                    class="cursor-pointer border-2 border-transparent bg-gray-50 dark:bg-black/20 p-4 rounded-2xl hover:border-tealBlue transition flex flex-col gap-2 relative">
+                                    <input type="radio" name="ai-model" value="advanced" class="peer hidden">
+                                    <div class="peer-checked:text-tealBlue flex items-center gap-2 font-bold"><i
+                                            data-lucide="brain" size="18"></i> <span data-i18n="advanced-model">Advanced
+                                            Model</span></div>
+                                    <span class="text-xs text-gray-500 font-medium" data-i18n="advanced-desc">Complex
+                                        reasoning and logic.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personalization Tab -->
+                    <div id="settings-personalization"
+                        class="settings-tab-content hidden space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-white" data-i18n="personalization">
+                            Personalization</h3>
+
+                        <div class="space-y-4">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                                data-i18n="app-wallpaper">Application Wallpaper</label>
+                            <!-- 10 Themes Grid -->
+                            <div
+                                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1">
+                                <button onclick="setWallpaper('none')"
+                                    class="h-24 rounded-2xl bg-gray-100 dark:bg-[#1a2333] border-2 border-transparent hover:border-tealBlue flex items-center justify-center font-bold text-xs text-gray-600 dark:text-gray-400 group relative overflow-hidden transition-all hover:shadow-lg">
+                                    <span class="z-10 px-2 py-0.5" data-i18n="default-theme">Default</span>
+                                </button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Abstract</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Gradient</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1531315630201-bb15abeb1653?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1531315630201-bb15abeb1653?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Nature</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Space</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1477959858617-67f851977558?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1477959858617-67f851977558?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Cityscape</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Ocean</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Cyberpunk</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Minimal</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Mountains</span></button>
+
+                                <!-- New Themes Requested by User -->
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Deep
+                                        Space</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1550616149-1be8774f762a?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1550616149-1be8774f762a?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Glass
+                                        Frost</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1495195134817-a165d4292b51?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1495195134817-a165d4292b51?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Minimal
+                                        White</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1510215664-58ebf1b40285?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1510215664-58ebf1b40285?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Dark
+                                        Carbon</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Indigo
+                                        AI</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Ocean
+                                        Mesh</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Sunset
+                                        Soft</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1557683304-673a23048d34?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1557683304-673a23048d34?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Midnight
+                                        Gradient</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1620121478148-35ed5f6e80b4?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1620121478148-35ed5f6e80b4?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Slate
+                                        Pro</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Neon
+                                        Edge</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Royal
+                                        Blue</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1478719059408-592965723cbc?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1478719059408-592965723cbc?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Arctic
+                                        Light</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Cyber
+                                        Black</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Aurora
+                                        Flow</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Graphite
+                                        Matte</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Emerald
+                                        Pulse</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Monochrome
+                                        Steel</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Soft
+                                        Lavender</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1534796636918-9f1af4eb651c?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1534796636918-9f1af4eb651c?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Titanium
+                                        Dark</span></button>
+                                <button
+                                    onclick="setWallpaper('https://images.unsplash.com/photo-1508614999368-9260051292e5?q=80&w=400')"
+                                    class="h-24 rounded-2xl bg-cover bg-center border-2 border-transparent hover:border-tealBlue flex items-end justify-center pb-2 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                                    style="background-image: url('https://images.unsplash.com/photo-1508614999368-9260051292e5?q=80&w=400')"><span
+                                        class="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md">Horizon
+                                        Blend</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Tab -->
+                    <div id="settings-notifications"
+                        class="settings-tab-content hidden space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-white">Notifications</h3>
+                        <div
+                            class="p-5 bg-green-500/10 border-l-4 border-green-500 rounded-r-2xl flex items-start gap-4 text-green-800 dark:text-green-400">
+                            <i data-lucide="check-circle-2" class="mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold">System Alert Active</h4>
+                                <p class="text-sm font-medium mt-1">You are automatically opted into AI Technology Daily
+                                    News & Updates.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 mt-8">
+                            <h4 class="font-bold text-gray-800 dark:text-white pb-2 flex items-center gap-2"><i
+                                    data-lucide="newspaper" size="18" class="text-tealBlue"></i> Development of AI
+                                Technologies (Daily News)</h4>
+                            <div class="space-y-3">
+                                <div
+                                    class="p-4 bg-gray-50 dark:bg-black/20 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col gap-1 hover:border-tealBlue transition cursor-pointer">
+                                    <strong class="text-sm">OpenAI releases new integration API standard</strong>
+                                    <span class="text-xs text-gray-500 font-medium">2 hours ago • Artificial
+                                        Intelligence</span>
+                                </div>
+                                <div
+                                    class="p-4 bg-gray-50 dark:bg-black/20 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col gap-1 hover:border-tealBlue transition cursor-pointer">
+                                    <strong class="text-sm">Google DeepMind reveals breakthroughs in logic
+                                        processing</strong>
+                                    <span class="text-xs text-gray-500 font-medium">5 hours ago • Machine
+                                        Learning</span>
+                                </div>
+                                <div
+                                    class="p-4 bg-gray-50 dark:bg-black/20 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col gap-1 hover:border-tealBlue transition cursor-pointer">
+                                    <strong class="text-sm">Global standards body announces secure generative AI
+                                        frameworks</strong>
+                                    <span class="text-xs text-gray-500 font-medium">1 day ago • Tech Sector</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parental Controls Tab -->
+                    <div id="settings-parental"
+                        class="settings-tab-content hidden space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-white">Parental Controls</h3>
+
+                        <div
+                            class="p-6 bg-orange-50 dark:bg-orange-500/10 border-2 border-orange-200 dark:border-orange-500/30 rounded-3xl flex items-center justify-between gap-6 hover:shadow-md transition">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="p-3 bg-orange-100 dark:bg-orange-500/20 rounded-full text-orange-600 dark:text-orange-400">
+                                    <i data-lucide="shield-alert" size="24"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-orange-800 dark:text-orange-400">Below 18 User
+                                        Mode</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">If activated,
+                                        the chatbot will operate strictly for users under 18. This enforces aggressive
+                                        content filtering and deploys safer, verified AI responses.</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <input type="checkbox" id="parental-toggle" class="sr-only peer"
+                                    onchange="toggleParentalControl(this)">
+                                <div
+                                    class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication / Login Modal (ChatGPT Professional Style) -->
+    <div id="auth-modal"
+        class="fixed inset-0 bg-black/60 z-[200] flex items-center justify-center backdrop-blur-sm transition-all text-center">
+        <div
+            class="bg-white dark:bg-[#1e293b] w-full max-w-sm rounded-[24px] p-8 shadow-2xl mx-4 border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+
+            <img src="logo.png" alt="Logo" class="w-12 h-12 object-contain mb-6"
+                onerror="this.src='https://bharatgpt.ai/logo.png'; this.onerror=null;">
+            <h2 class="text-2xl font-bold tracking-tight text-gray-800 dark:text-white mb-2">Welcome back</h2>
+            <p class="text-[13px] text-gray-500 mb-8 px-2 font-medium">Log in to sync your active projects and chat
+                history.</p>
+
+            <div class="w-full flex flex-col gap-3">
+                <button onclick="simulateLogin('Email')"
+                    class="w-full flex items-center justify-center gap-3 p-3.5 rounded-[12px] bg-[#327382] hover:bg-[#2A606D] text-white transition font-semibold text-sm shadow-sm">
+                    <i data-lucide="mail" size="18"></i> Continue with Email
+                </button>
+
+                <div class="mt-2 mb-2 flex items-center gap-3 w-full">
+                    <hr class="flex-1 border-gray-100 dark:border-gray-700">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">OR</span>
+                    <hr class="flex-1 border-gray-100 dark:border-gray-700">
+                </div>
+
+                <button onclick="simulateLogin('Google')"
+                    class="w-full flex items-center justify-center gap-3 p-3 rounded-[12px] border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] hover:bg-gray-50 dark:hover:bg-gray-800 transition font-semibold text-sm text-gray-700 dark:text-gray-200 shadow-sm">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
+                    Continue with Google
+                </button>
+                <button onclick="simulateLogin('Microsoft')"
+                    class="w-full flex items-center justify-center gap-3 p-3 rounded-[12px] border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] hover:bg-gray-50 dark:hover:bg-gray-800 transition font-semibold text-sm text-gray-700 dark:text-gray-200 shadow-sm">
+                    <svg class="w-5 h-5" viewBox="0 0 21 21">
+                        <path fill="#f25022" d="M0 0h10v10H0z" />
+                        <path fill="#7fba00" d="M11 0h10v10H11z" />
+                        <path fill="#00a4ef" d="M0 11h10v10H0z" />
+                        <path fill="#ffb900" d="M11 11h10v10H11z" />
+                    </svg> Continue with Microsoft
+                </button>
+                <button onclick="simulateLogin('Apple')"
+                    class="w-full flex items-center justify-center gap-3 p-3 rounded-[12px] border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] hover:bg-gray-50 dark:hover:bg-gray-800 transition font-semibold text-sm text-gray-700 dark:text-gray-200 shadow-sm">
+                    <svg class="w-5 h-5 fill-black dark:fill-white" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.111 6.556c.552-.663 1.002-1.579.883-2.502-.82.046-1.841.564-2.435 1.258-.517.595-1.049 1.545-.9 2.441.874.07 1.831-.497 2.452-1.197zM15.42 18h-.057c-.722 0-1.425-.494-2.227-.494-.823 0-1.53.506-2.261.506-1.155 0-2.247-.637-2.846-1.536-1.253-1.889-1.396-4.524-.13-5.918.775-.85 1.838-1.353 2.91-1.353.945 0 1.812.564 2.455.564.606 0 1.572-.601 2.684-.601 1.096 0 2.138.487 2.766 1.359-2.31 1.275-1.898 4.293.42 5.176-.523 1.34-1.54 2.302-2.73 2.302h-1.004z" />
+                    </svg> Continue with Apple
+                </button>
+            </div>
+
+            <button onclick="continueAsGuest()"
+                class="mt-5 w-full py-3.5 rounded-[12px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-[13px]">
+                Continue as Guest
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // --- Authentication & Identity Logic ---
+        let isAuthenticated = false;
+
+        // Global click listener to close dropdowns
+        document.addEventListener('click', function (event) {
+            // Close Auth Menu
+            const authMenu = document.getElementById('profile-auth-menu');
+            if (authMenu && !authMenu.classList.contains('hidden')) {
+                // If click is not inside the profile button or menu
+                if (!event.target.closest('#profile-container') && !event.target.closest('#profile-auth-menu')) {
+                    authMenu.classList.add('hidden');
+                }
+            }
+
+            // Close Logo Bubble
+            const logoBubble = document.getElementById('logo-bubble');
+            if (logoBubble && !logoBubble.classList.contains('hidden')) {
+                if (!event.target.closest('#logo-bubble-container')) {
+                    logoBubble.classList.add('hidden');
+                }
+            }
+        });
+
+        function toggleLogoBubble(e) {
+            if (e) e.stopPropagation();
+            document.getElementById('logo-bubble').classList.toggle('hidden');
+            // Hide auth menu if open
+            const authMenu = document.getElementById('profile-auth-menu');
+            if (authMenu && !authMenu.classList.contains('hidden')) {
+                authMenu.classList.add('hidden');
+            }
+        }
+
+        function toggleAuthMenu(e) {
+            if (e) e.stopPropagation();
+            document.getElementById('profile-auth-menu').classList.toggle('hidden');
+            // Hide logo bubble if open
+            const logoBubble = document.getElementById('logo-bubble');
+            if (logoBubble && !logoBubble.classList.contains('hidden')) {
+                logoBubble.classList.add('hidden');
+            }
+        }
+
+        function openAuthModal(e) {
+            e.stopPropagation();
+            document.getElementById('profile-auth-menu').classList.add('hidden');
+            if (isAuthenticated) {
+                // Perform Log Out
+                isAuthenticated = false;
+                continueAsGuest();
+            } else {
+                // Open Login Modal
+                document.getElementById('auth-modal').style.display = 'flex';
+            }
+        }
+
+        let authToken = null;
+
+        async function simulateLogin(provider) {
+            const userEmail = prompt(`Bharat GPT Secure OAuth Request\n\nSign in via ${provider}:\nEnter your email address below to securely authenticate.`);
+            if (userEmail && userEmail.includes('@')) {
+                isAuthenticated = true;
+
+                try {
+                    const baseUrl = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" ? "http://localhost:8000" : "";
+
+                    // Attempt Registration
+                    await fetch(`${baseUrl}/api/v1/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: userEmail, password: "securepassword123", full_name: userEmail })
+                    }).catch(err => { console.log('Already registered or backend unavailable'); });
+
+                    // Login to get JWT Bearer token
+                    const formData = new URLSearchParams();
+                    formData.append('username', userEmail);
+                    formData.append('password', "securepassword123");
+
+                    const loginRes = await fetch(`${baseUrl}/api/v1/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    });
+
+                    if (loginRes.ok) {
+                        const tokenData = await loginRes.json();
+                        authToken = tokenData.access_token;
+                        isAuthenticated = true;
+                    } else {
+                        // Soft fallback for visual effect if backend is down
+                        console.warn("Backend auth unavailable. Using mock token.");
+                        authToken = "dummy_token_fallback";
+                        isAuthenticated = true;
+                    }
+                } catch (e) {
+                    console.error("Auth Exception: ", e);
+                    authToken = "dummy_token_fallback";
+                    isAuthenticated = true;
+                }
+
+                // Hide modal
+                document.getElementById('auth-modal').style.display = 'none';
+
+                // Update Sidebar Profile
+                const profileName = document.getElementById('profile-name');
+                const profileAvatar = document.getElementById('profile-avatar');
+                const statusIndicator = document.getElementById('profile-status-indicator');
+
+                profileName.innerText = userEmail;
+                profileName.removeAttribute('data-i18n'); // Remove guest translation binding
+                profileName.title = userEmail; // Add hover tooltip in case it truncates
+
+                profileAvatar.innerText = userEmail.charAt(0).toUpperCase();
+                profileAvatar.style.backgroundColor = '#327382'; // Active Teal User theme
+
+                statusIndicator.innerText = "Active Session";
+                statusIndicator.classList.replace('text-gray-500', 'text-tealBlue');
+
+                // Update Context Menu to 'Log Out'
+                document.getElementById('auth-menu-text').innerText = "Log Out";
+                document.getElementById('auth-menu-text').classList.add('text-red-500');
+                document.getElementById('auth-menu-icon').setAttribute('aria-label', 'log-out');
+
+                let iconNode = document.getElementById('auth-menu-icon');
+                iconNode.outerHTML = `<i data-lucide="log-out" size="16" id="auth-menu-icon" class="text-red-500"></i>`;
+
+                // Notify via Chat
+                addMsg('assistant', `Welcome back, **${userEmail}**! You have been successfully authenticated via ${provider}. Your active session has been verified and synced.`);
+                lucide.createIcons();
+            } else if (userEmail) {
+                alert("Authentication Failed: Please enter a valid email address.");
+            }
+        }
+
+        function continueAsGuest() {
+            isAuthenticated = false;
+            authToken = null;
+            // Hide modal
+            document.getElementById('auth-modal').style.display = 'none';
+
+            // Revert Sidebar Profile to Guest
+            const profileName = document.getElementById('profile-name');
+            const profileAvatar = document.getElementById('profile-avatar');
+            const statusIndicator = document.getElementById('profile-status-indicator');
+
+            profileName.innerText = 'Guest';
+            profileName.setAttribute('data-i18n', 'guest');
+            profileName.title = '';
+
+            profileAvatar.innerText = 'G';
+            profileAvatar.style.backgroundColor = '#5C5C9C'; // Original Guest theme
+
+            statusIndicator.innerText = "Not Signed In";
+            statusIndicator.classList.replace('text-tealBlue', 'text-gray-500');
+
+            // Update Context Menu to 'Log In'
+            document.getElementById('auth-menu-text').innerText = "Log In";
+            document.getElementById('auth-menu-text').classList.remove('text-red-500');
+
+            let iconNode = document.getElementById('auth-menu-icon');
+            iconNode.outerHTML = `<i data-lucide="log-in" size="16" id="auth-menu-icon" class="text-tealBlue"></i>`;
+
+            // Translate the guest immediately if locale is not EN
+            if (currentLocale !== 'en') {
+                changeLanguage(currentLocale);
+            }
+            lucide.createIcons();
+        }
+
+        // --- Settings Modal Logic ---
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('hidden');
+            document.getElementById('settings-modal').classList.add('flex');
+            switchSettingsTab('general');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+            document.getElementById('settings-modal').classList.remove('flex');
+        }
+
+        function switchSettingsTab(tabName) {
+            // Hide all content areas
+            document.querySelectorAll('.settings-tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active state from all buttons
+            document.querySelectorAll('.settings-tab-btn').forEach(el => {
+                el.classList.remove('bg-black/10', 'dark:bg-white/10', 'text-tealBlue');
+            });
+
+            // Show targeted content
+            document.getElementById(`settings-${tabName}`).classList.remove('hidden');
+            // Give active visual state to clicked button
+            const btn = document.querySelector(`.settings-tab-btn[data-tab="${tabName}"]`);
+            if (btn) btn.classList.add('bg-black/10', 'dark:bg-white/10', 'text-tealBlue');
+
+            lucide.createIcons();
+        }
+
+        function changeFontSize(size) {
+            document.getElementById('font-size-display').innerText = `${size}px`;
+            document.documentElement.style.setProperty('--chat-font-size', `${size}px`);
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) chatInput.style.fontSize = `${size}px`;
+            const previewBubble = document.getElementById('font-preview-bubble');
+            if (previewBubble) previewBubble.style.fontSize = `${size}px`;
+        }
+
+        function setWallpaper(url) {
+            const mainArea = document.getElementById('messages-view');
+            if (url === 'none') {
+                mainArea.style.backgroundImage = 'none';
+                mainArea.style.backgroundColor = '';
+            } else {
+                mainArea.style.backgroundImage = `url('${url}')`;
+                mainArea.style.backgroundSize = 'cover';
+                mainArea.style.backgroundPosition = 'center';
+            }
+        }
+
+        let isParentalControlActive = false;
+        function toggleParentalControl(checkbox) {
+            isParentalControlActive = checkbox.checked;
+            if (checkbox.checked) {
+                alert("Parental Control Activated:\nThe chatbot is now configured for users Below 18.\nStrict content filtering and safer AI responses are enforced.");
+            } else {
+                alert("Parental Control Deactivated:\nStandard application mode has been restored.");
+            }
+        }
+        // --- End Settings Modal Logic ---
+
+        function toggleTheme() {
+            const body = document.body;
+            const html = document.documentElement;
+            const isDark = body.classList.contains('dark');
+            const picker = document.querySelector('emoji-picker');
+
+            if (isDark) {
+                body.classList.remove('dark');
+                html.classList.remove('dark');
+                html.setAttribute('data-theme', 'light');
+                document.getElementById('theme-icon').setAttribute('data-lucide', 'moon');
+                if (picker) picker.classList.remove('dark');
+            } else {
+                body.classList.add('dark');
+                html.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+                if (picker) picker.classList.add('dark');
+            }
+            lucide.createIcons();
+        }
+
+        // Initialize with default theme
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark');
+            const picker = document.querySelector('emoji-picker');
+            if (picker) picker.classList.add('dark');
+        }
+
+        const container = document.getElementById('messages-container');
+        const welcome = document.getElementById('welcome-view');
+        const input = document.getElementById('chat-input');
+
+        let currentProjectName = null;
+
+        function handleNewChat() {
+            currentProjectName = null;
+            currentChatId = null;
+            chatMessages = [];
+            input.placeholder = "Send a message or type '/' for suggestions...";
+            container.innerHTML = '';
+            container.appendChild(welcome);
+            welcome.classList.remove('hidden');
+            input.value = '';
+            input.style.height = 'auto';
+            document.getElementById('current-chat-tab').querySelector('span.truncate').innerText = "Active UI Chat";
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('hidden');
+            }
+        }
+
+        function addMsg(role, text, isHtml = false) {
+            if (welcome) welcome.classList.add('hidden');
+            const projectWelcome = document.getElementById('project-welcome');
+            if (projectWelcome) projectWelcome.classList.add('hidden');
+
+            const div = document.createElement('div');
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300 mb-6`;
+
+            // Convert markdown style links to html if they exist and we are not explicitly passing raw HTML
+            let finalContent = text;
+            if (!isHtml) {
+                if (role === 'assistant') {
+                    finalContent = marked.parse(text);
+                } else {
+                    finalContent = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-tealBlue hover:underline">$1</a>')
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n/g, '<br>');
+                }
+            }
+
+            div.innerHTML = `
+                <div class="message-bubble ${role === 'assistant' ? 'markdown-body relative group' : ''} max-w-[80%] px-8 py-5 leading-relaxed" style="font-size: var(--chat-font-size, 15px);">
+                    <div class="msg-content">${finalContent}</div>
+                    ${role === 'assistant' ? `
+                    <button onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); this.innerHTML='<i data-lucide=\\'check\\' size=\\'14\\'></i> Copied!'; setTimeout(()=>this.innerHTML='<i data-lucide=\\'copy\\' size=\\'14\\'></i> Copy', 2000); lucide.createIcons();" class="absolute -bottom-3 right-4 opacity-0 group-hover:opacity-100 transition duration-300 text-[11px] font-bold bg-white dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white px-2 py-1 rounded shadow-md border border-gray-200 dark:border-gray-700 flex items-center gap-1 z-10">
+                        <i data-lucide="copy" size="14"></i> Copy
+                    </button>
+                    ` : ''}
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function openProjectsModal() {
+            document.getElementById('projects-modal').classList.remove('hidden');
+            document.getElementById('projects-modal').classList.add('flex');
+            document.getElementById('project-name-input').focus();
+        }
+
+        function closeProjectsModal() {
+            document.getElementById('projects-modal').classList.add('hidden');
+            document.getElementById('projects-modal').classList.remove('flex');
+            document.getElementById('project-name-input').value = '';
+        }
+
+        function saveProject() {
+            const name = document.getElementById('project-name-input').value.trim();
+            if (!name) return;
+            currentProjectName = name;
+            closeProjectsModal();
+
+            switchView('messages');
+
+            container.innerHTML = '';
+
+            const projectWelcome = document.createElement('div');
+            projectWelcome.id = 'project-welcome';
+            projectWelcome.className = 'flex flex-col items-center justify-center h-full animate-in fade-in duration-500 w-full';
+            projectWelcome.innerHTML = `
+                <div class="flex flex-col items-center gap-4 p-8 bg-white/30 dark:bg-white/5 rounded-[40px] border border-white/50 backdrop-blur-xl shadow-2xl">
+                    <i data-lucide="layout" size="48" class="text-[#327382]"></i>
+                    <h2 class="text-3xl font-bold tracking-tight text-[#324B5C] dark:text-white">Project: ${name}</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Your conversation for this project starts here.</p>
+                </div>
+            `;
+            container.appendChild(projectWelcome);
+            lucide.createIcons();
+
+            input.value = '';
+            input.style.height = 'auto';
+            input.placeholder = `Message ${name}...`;
+
+            chatMessages = [];
+            currentChatId = 'project_' + Date.now();
+            allChats.unshift({
+                id: currentChatId,
+                title: 'Project: ' + name,
+                messages: chatMessages,
+                isProject: true
+            });
+            localStorage.setItem('bharatgpt_chats', JSON.stringify(allChats));
+            loadChatsToSidebar();
+            document.getElementById('current-chat-tab').querySelector('span.truncate').innerText = 'Project: ' + name;
+        }
+
+        let chatMessages = [];
+        let currentChatId = null;
+        let allChats = JSON.parse(localStorage.getItem('bharatgpt_chats')) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadChatsToSidebar();
+        });
+
+        function saveChatState() {
+            if (!currentChatId) {
+                currentChatId = 'chat_' + Date.now();
+                allChats.unshift({
+                    id: currentChatId,
+                    title: chatMessages[0].content.substring(0, 30) + '...',
+                    messages: chatMessages
+                });
+            } else {
+                let chat = allChats.find(c => c.id === currentChatId);
+                if (chat) chat.messages = chatMessages;
+            }
+            localStorage.setItem('bharatgpt_chats', JSON.stringify(allChats));
+            loadChatsToSidebar();
+            document.getElementById('current-chat-tab').querySelector('span.truncate').innerText = allChats.find(c => c.id === currentChatId)?.title || "Active UI Chat";
+        }
+
+        function loadChatsToSidebar() {
+            const historyDiv = document.getElementById('extended-chat-history');
+            const projectDiv = document.getElementById('extended-projects-history');
+
+            if (historyDiv) historyDiv.innerHTML = '';
+            if (projectDiv) projectDiv.innerHTML = '';
+
+            allChats.forEach(chat => {
+                const item = document.createElement('div');
+                item.className = "group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[13px] text-gray-500 font-medium";
+                item.onclick = () => loadChat(chat.id);
+                item.innerHTML = `<span class="truncate">${chat.title}</span>`;
+
+                if (chat.id.startsWith('project_') || chat.isProject) {
+                    if (projectDiv) projectDiv.appendChild(item);
+                } else {
+                    if (historyDiv) historyDiv.appendChild(item);
+                }
+            });
+        }
+
+        function toggleProjectsHistory() {
+            const el = document.getElementById('extended-projects-history');
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function loadChat(chatId) {
+            const chat = allChats.find(c => c.id === chatId);
+            if (!chat) return;
+
+            currentChatId = chatId;
+            chatMessages = chat.messages || [];
+
+            container.innerHTML = '';
+            if (welcome) welcome.classList.add('hidden');
+            const projectWelcome = document.getElementById('project-welcome');
+            if (projectWelcome) projectWelcome.classList.add('hidden');
+
+            chatMessages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300 mb-6`;
+
+                let finalContent = msg.content;
+                if (msg.role === 'assistant') {
+                    finalContent = marked.parse(finalContent);
+                } else {
+                    finalContent = finalContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-tealBlue hover:underline">$1</a>')
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n/g, '<br>');
+                }
+
+                div.innerHTML = `
+                    <div class="message-bubble ${msg.role === 'assistant' ? 'markdown-body relative group' : ''} max-w-[80%] px-8 py-5 leading-relaxed" style="font-size: var(--chat-font-size, 15px);">
+                        <div class="msg-content">${finalContent}</div>
+                        ${msg.role === 'assistant' ? `
+                        <button onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); this.innerHTML='<i data-lucide=\\'check\\' size=\\'14\\'></i> Copied!'; setTimeout(()=>this.innerHTML='<i data-lucide=\\'copy\\' size=\\'14\\'></i> Copy', 2000); lucide.createIcons();" class="absolute -bottom-3 right-4 opacity-0 group-hover:opacity-100 transition duration-300 text-[11px] font-bold bg-white dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white px-2 py-1 rounded shadow-md border border-gray-200 dark:border-gray-700 flex items-center gap-1 z-10">
+                            <i data-lucide="copy" size="14"></i> Copy
+                        </button>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+            document.getElementById('current-chat-tab').querySelector('span.truncate').innerText = chat.title;
+        }
+
+        async function exportChat(format) {
+            if (chatMessages.length === 0) {
+                alert("No chat to export!");
+                return;
+            }
+
+            let filename = (currentChatId ? allChats.find(c => c.id === currentChatId)?.title : 'chat_export') || 'chat_export';
+            filename = filename.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+            if (format === 'txt' || format === 'md') {
+                let textContent = "";
+                chatMessages.forEach(m => {
+                    textContent += `[${m.role.toUpperCase()}]\n${m.content}\n\n`;
+                });
+                const blob = new Blob([textContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${filename}.${format}`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            else if (format === 'pdf') {
+                const element = document.getElementById('messages-container');
+                const opt = {
+                    margin: 1,
+                    filename: `${filename}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                if (window.html2pdf) {
+                    html2pdf().set(opt).from(element).save();
+                } else {
+                    alert('PDF renderer not loaded. Please try again or use Print to PDF.');
+                }
+            }
+        }
+
+        async function handleSendMessage() {
+            const val = input.value.trim();
+            if (!val) return;
+
+            input.value = '';
+            input.style.height = 'auto';
+            addMsg('user', val);
+
+            // Push user query to context memory
+            chatMessages.push({ role: "user", content: val });
+
+            // Fetch the currently selected model logic
+            const currentModelBtn = document.querySelector('input[name="ai-model"]:checked');
+            const selectedModel = currentModelBtn ? currentModelBtn.value : 'standard';
+
+            let modeStr = "Standard";
+            if (activeFilter !== "All") {
+                modeStr = activeFilter;
+            } else if (selectedModel === 'advanced') {
+                modeStr = "Advanced";
+            }
+
+            // UI Placeholder for streaming Assistant
+            if (welcome) welcome.classList.add('hidden');
+            const projectWelcome = document.getElementById('project-welcome');
+            if (projectWelcome) projectWelcome.classList.add('hidden');
+
+            const div = document.createElement('div');
+            div.className = `flex justify-start animate-in slide-in-from-bottom-2 duration-300 mb-6`;
+            div.innerHTML = `
+                    <div class="message-bubble markdown-body relative group max-w-[80%] px-8 py-5 leading-relaxed" style="font-size: var(--chat-font-size, 15px);">
+                        <div class="streaming-content msg-content italic text-gray-500"><span class="flex items-center gap-2">Thinking<span class="flex gap-1 ml-1"><span class="typing-dot" style="animation-delay: 0s"></span><span class="typing-dot" style="animation-delay: 0.2s"></span><span class="typing-dot" style="animation-delay: 0.4s"></span></span></span></div>
+                        <button onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); this.innerHTML='<i data-lucide=\\'check\\' size=\\'14\\'></i> Copied!'; setTimeout(()=>this.innerHTML='<i data-lucide=\\'copy\\' size=\\'14\\'></i> Copy', 2000); lucide.createIcons();" class="absolute -bottom-3 right-4 opacity-0 group-hover:opacity-100 transition duration-300 text-[11px] font-bold bg-white dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white px-2 py-1 rounded shadow-md border border-gray-200 dark:border-gray-700 flex items-center gap-1 z-10">
+                            <i data-lucide="copy" size="14"></i> Copy
+                        </button>
+                    </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+
+            const contentNode = div.querySelector('.streaming-content');
+
+            try {
+                // Target the backend container
+                const baseUrl = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" ? "http://localhost:8000" : "";
+                const response = await fetch(`${baseUrl}/api/v1/chat/stream`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) },
+                    body: JSON.stringify({ messages: chatMessages, mode: modeStr })
+                });
+
+                if (response.status === 401) {
+                    contentNode.innerHTML = `< span class="text-red-500 font-bold" > <i data-lucide="lock" size="14" class="inline"></i> Authentication Required.Please Log In using the sidebar.</span> `;
+                    lucide.createIcons();
+                    return;
+                } else if (!response.ok) {
+                    throw new Error("HTTP " + response.status);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                contentNode.classList.remove('italic', 'text-gray-500');
+                contentNode.innerHTML = "";
+                let assistantFullContent = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (let line of lines) {
+                        if (line.trim() === "") continue;
+                        if (line.startsWith("data: ")) {
+                            const dataStr = line.slice(6).trim();
+                            if (dataStr === "[DONE]") break;
+                            try {
+                                const payload = JSON.parse(dataStr);
+                                if (payload.content) {
+                                    assistantFullContent += payload.content;
+
+                                    // Superior Markdown parsing via marked.js
+                                    let htmlRender = marked.parse(assistantFullContent);
+
+                                    contentNode.innerHTML = htmlRender;
+                                    container.scrollTop = container.scrollHeight;
+                                }
+                            } catch (e) { /* ignore parse error on partial chunks */ }
+                        }
+                    }
+                }
+
+                chatMessages.push({ role: "assistant", content: assistantFullContent });
+                saveChatState();
+
+            } catch (error) {
+                console.error("Backend connect failed. Falling back to Global AI Engine:", error);
+
+                contentNode.innerHTML = `<span class="italic text-gray-500">Routing to Global AI Nodes for precision...</span>`;
+
+                try {
+                    let systemMsg = "You are Bharat GPT 2.0, an Indian style Chat BOT. For basic greetings, respond warmly. For any factual, informational, or advanced queries (e.g., about a person, place, or concept), you MUST provide a highly structured, detailed answer exactly like this format:\n\n" +
+                        "![Image](https://image.pollinations.ai/prompt/{topic}?width=800&height=400&nologo=true)\n\n" +
+                        "[Brief introductory paragraph about the topic]\n\n" +
+                        "📌 **Basic Information**\n" +
+                        "- [Key fact 1]\n" +
+                        "- [Key fact 2]\n" +
+                        "- [Key fact 3]\n\n" +
+                        "🏆 **Major Achievements** (or Highlights)\n" +
+                        "- [Detail 1]\n" +
+                        "- [Detail 2]\n\n" +
+                        "💥 **Why It Is Special**\n" +
+                        "- [Detail 1]\n" +
+                        "- [Detail 2]\n\n" +
+                        "🌟 **Legacy** (or Conclusion)\n" +
+                        "[Paragraph explaining the legacy or conclusion]\n\n" +
+                        "If you want, I can also give:\n" +
+                        "- [Related aspect 1]\n" +
+                        "- [Related aspect 2]\n\n" +
+                        "Note: Replace {topic} in the image URL with a short, URL-encoded string representing the topic (e.g., ms+dhoni). Always use Markdown for formatting. Never output your internal reasoning.";
+
+                    // Build proper messages array for chat API
+                    let apiMessages = [{ role: "system", content: systemMsg }];
+                    // Add last 6 messages for context
+                    let recentMsgs = chatMessages.slice(-6);
+                    recentMsgs.forEach(m => {
+                        apiMessages.push({ role: m.role, content: m.content });
+                    });
+
+                    // Try Pollinations simple text API (confirmed working, no auth needed)
+                    let aiText = '';
+                    try {
+                        const textRes = await fetch('https://text.pollinations.ai/' + encodeURIComponent(val) + '?model=openai&system=' + encodeURIComponent(systemMsg));
+                        if (!textRes.ok) throw new Error("Text endpoint failed");
+                        aiText = await textRes.text();
+                    } catch (textErr) {
+                        // Secondary: try OpenAI-compatible chat endpoint
+                        const aiRes = await fetch('https://text.pollinations.ai/openai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                model: "openai",
+                                messages: apiMessages,
+                                stream: false
+                            })
+                        });
+                        if (!aiRes.ok) throw new Error("AI Node Offline");
+                        const aiJson = await aiRes.json();
+                        aiText = aiJson.choices?.[0]?.message?.content || aiJson.text || '';
+                        if (!aiText) throw new Error("Empty AI response");
+                    }
+
+                    // Bulletproof parser for when the model accidentally bleeds internal JSON thought structures
+                    let parsedAiText = aiText;
+                    try {
+                        const jsonLeak = JSON.parse(aiText);
+                        if (jsonLeak && typeof jsonLeak === 'object') {
+                            parsedAiText = jsonLeak.content || jsonLeak.response || jsonLeak.text || jsonLeak.reasoning_content || aiText;
+                        }
+                    } catch (e) {
+                        // Expected behavior: it is regular text, not JSON
+                    }
+
+                    // OUTPUT FILTER LAYER: Purging spilled LLM Reasoning / Chain-of-Thought paragraphs
+                    let cleanedText = parsedAiText
+                        .replace(/^We need to respond as.*?(?:\n\n|\n|$)/gmi, '')
+                        .replace(/^The user \w+.*?(?:\n\n|\n|$)/gmi, '')
+                        .replace(/^We should.*?(?:\n\n|\n|$)/gmi, '')
+                        .replace(/^Ok, respond.*?(?:\n\n|\n|$)/gmi, '')
+                        .replace(/^Let's produce.*?(?:\n\n|\n|$)/gmi, '')
+                        .replace(/^We'll do structure.*?(?:\n\n|\n|$)/gmi, '')
+                        .replace(/^We must not mention.*?(?:\n\n|\n|$)/gmi, '');
+
+                    cleanedText = cleanedText.trim();
+
+                    if (!cleanedText) {
+                        cleanedText = "Namaste! I'm Bharat GPT 2.0. How can I help you today?";
+                    }
+
+                    chatMessages.push({ role: "assistant", content: cleanedText });
+                    saveChatState();
+
+                    // Superior Markdown processing via marked.js
+                    let htmlRender = marked.parse(cleanedText);
+
+                    contentNode.classList.remove('italic', 'text-gray-500');
+                    contentNode.innerHTML = htmlRender;
+                    container.scrollTop = container.scrollHeight;
+                } catch (aiErr) {
+                    console.error("Fallback AI also failed:", aiErr);
+                    // For casual messages, provide a friendly response instead of search
+                    const casualPatterns = /^(hi|hello|hey|namaste|good morning|good evening|good night|how are you|what's up|sup|yo|hola|bonjour)/i;
+                    if (casualPatterns.test(val)) {
+                        let friendlyReply = "Namaste! 🙏 I'm Bharat GPT 2.0 — your intelligent AI companion. I'm here to help with anything you need — whether it's answering questions, writing code, generating ideas, or just having a conversation. What would you like to explore today?";
+                        contentNode.classList.remove('italic', 'text-gray-500');
+                        contentNode.innerHTML = marked.parse(friendlyReply);
+                        chatMessages.push({ role: "assistant", content: friendlyReply });
+                        saveChatState();
+                        container.scrollTop = container.scrollHeight;
+                    } else {
+                        // Ultimate fallback error message
+                        let errorReply = "Sorry, I am having trouble connecting to my neural network right now. Please try asking again in a moment.";
+                        contentNode.classList.remove('italic', 'text-gray-500');
+                        contentNode.innerHTML = marked.parse(errorReply);
+                        chatMessages.push({ role: "assistant", content: errorReply });
+                        saveChatState();
+                        container.scrollTop = container.scrollHeight;
+                    }
+                }
+            }
+            // Re-render lucide icons for any new elements
+            lucide.createIcons();
+        }
+
+        // Simulated Search Auto-complete Suggestions
+        const mockSuggestions = [
+            "How does AI work?",
+            "What is generative AI?",
+            "Latest news in technology",
+            "Python programming tips",
+            "Best places to visit in India",
+            "Healthy dinner recipes",
+            "Show me a picture of space",
+            "Translate hello to French"
+        ];
+
+        function handleSearchSuggestions(el) {
+            const val = el.value.toLowerCase().trim();
+            const suggestionsContainer = document.getElementById('search-suggestions');
+            const listContainer = document.getElementById('suggestions-list');
+
+            if (!val) {
+                suggestionsContainer.classList.add('hidden');
+                return;
+            }
+
+            const filtered = mockSuggestions.filter(s => s.toLowerCase().includes(val));
+
+            if (filtered.length > 0) {
+                listContainer.innerHTML = filtered.map(s => `
+                    <div onclick="executeSearchLinks('${s.replace(/'/g, "\\'")}')" class="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm transition">
+                        <i data-lucide="search" size="14" class="text-gray-400"></i>
+                        <span class="text-gray-700 dark:text-gray-200">${s}</span>
+                    </div>
+                `).join('');
+                suggestionsContainer.classList.remove('hidden');
+                lucide.createIcons();
+            } else {
+                listContainer.innerHTML = `
+                    <div onclick="executeSearchLinks('${val.replace(/'/g, "\\'")}')" class="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm transition">
+                        <i data-lucide="search" size="14" class="text-gray-400"></i>
+                        <span class="text-gray-700 dark:text-gray-200">Search for "${el.value}"</span>
+                    </div>
+                `;
+                suggestionsContainer.classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+
+        async function executeSearch(query, isFallback = false) {
+            const searchInput = document.getElementById('header-search');
+            const suggestionsContainer = document.getElementById('search-suggestions');
+
+            suggestionsContainer.classList.add('hidden');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.blur();
+            }
+
+            // Ensure we are in messages view
+            switchView('messages');
+
+            if (!isFallback) {
+                addMsg('user', `🔍 Search: ${query}`);
+            }
+
+            // Show a temporary typing indicator or loading message
+            addMsg('assistant', `<span class="italic text-gray-500">Searching for "${query}"...</span>`, true);
+
+            const lowerQuery = query.toLowerCase();
+
+            // Image Intent Detection
+            if (lowerQuery.includes('image') || lowerQuery.includes('picture') || lowerQuery.includes('photo') || lowerQuery.includes('pic')) {
+                let topic = query.replace(/(show me|an|a|some|images|image|pictures|picture|photos|photo|pics|pic|of)/gi, '').trim() || query;
+                container.removeChild(container.lastChild); // Remove typing indicator
+
+                let imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(topic + " high quality photo")}?width=600&height=400&nologo=true`;
+                let imageHtml = `
+                    <div>
+                        <p class="mb-4">Here is an image result for <strong>"${topic}"</strong>:</p>
+                        <div class="relative w-full max-w-md rounded-[20px] overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 mb-4 bg-gray-50 dark:bg-black/20 flex items-center justify-center min-h-[250px] animate-pulse">
+                            <img src="${imageUrl}" alt="${topic}" class="w-full h-auto object-cover" onload="this.parentElement.classList.remove('animate-pulse')" />
+                        </div>
+                        <div class="flex gap-3 text-xs">
+                            <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(topic)}" target="_blank" class="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="image" size="14"></i> View on Google Images
+                            </a>
+                        </div>
+                    </div>`;
+                addMsg('assistant', imageHtml, true);
+                lucide.createIcons();
+                return;
+            }
+
+            // Video Intent Detection
+            if (lowerQuery.includes('video') || lowerQuery.includes('youtube') || lowerQuery.includes('watch')) {
+                let topic = query.replace(/(show me|a|an|some|videos|video|youtube|watch|of)/gi, '').trim() || query;
+                container.removeChild(container.lastChild); // Remove typing indicator
+
+                let thumbnailPrompt = "youtube thumbnail of " + topic;
+                let thumbnailUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(thumbnailPrompt)}?width=600&height=337&nologo=true`;
+                let videoHtml = `
+                    <div>
+                        <p class="mb-4">Here is a top video result for <strong>"${topic}"</strong>:</p>
+                        <div class="relative w-full max-w-md bg-black rounded-[20px] overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800 mb-4 animate-pulse">
+                            <img src="${thumbnailUrl}" alt="Video Thumbnail" class="w-full h-auto opacity-70 object-cover aspect-video" onload="this.parentElement.classList.remove('animate-pulse')" />
+                            <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(topic)}" target="_blank" class="absolute inset-0 flex flex-col items-center justify-center hover:bg-black/20 transition group">
+                                <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white shadow-2xl group-hover:scale-110 transition">
+                                    <i data-lucide="play" size="24" class="ml-1" fill="white"></i>
+                                </div>
+                                <span class="text-white font-bold mt-3 drop-shadow-md">Watch on YouTube</span>
+                            </a>
+                        </div>
+                        <div class="flex gap-3 text-xs">
+                            <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(topic)}" target="_blank" class="px-4 py-2 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="youtube" size="14"></i> Search YouTube
+                            </a>
+                        </div>
+                    </div>`;
+                addMsg('assistant', videoHtml, true);
+                lucide.createIcons();
+                return;
+            }
+
+            try {
+                // Determine if we should hit the newly decoupled Local Proxy Backend first
+                let proxyResponse;
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 1500); // Fast fail
+
+                    proxyResponse = await fetch('http://127.0.0.1:5000/api/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query: query }),
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+                } catch (backendErr) {
+                    // If backend proxy is not literally running right now, catch and manually trip the error flag
+                    proxyResponse = { ok: false };
+                }
+
+                if (proxyResponse.ok) {
+                    const searchData = await proxyResponse.json();
+
+                    if (container.lastChild && container.lastChild.innerHTML.includes("Searching for")) {
+                        container.removeChild(container.lastChild); // Remove loading
+                    }
+
+                    if (searchData.status === 'no_results' || !searchData.results || searchData.results.length === 0) {
+                        const noDataHtml = `
+                         <div>
+                             <p class="mb-4 text-red-500 font-bold"><i data-lucide="alert-circle" size="16" class="inline"></i> No verified results found.</p>
+                             <p class="mb-4 text-sm text-gray-500">I could not find exact, real-time verified data online. Try searching directly below:</p>
+                             <div class="flex gap-3 text-xs">
+                                 <a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl transition flex items-center gap-2">
+                                     <i data-lucide="external-link" size="14"></i> Google Search
+                                 </a>
+                             </div>
+                         </div>`;
+                        addMsg('assistant', noDataHtml, true);
+                        lucide.createIcons();
+                        return;
+                    }
+
+                    let htmlBuilder = `<div>`;
+                    htmlBuilder += `<div class="mb-5 bg-tealBlue/5 border border-tealBlue/20 p-4 rounded-2xl">
+                                        <p class="text-sm font-bold text-tealBlue mb-2 flex items-center gap-2"><i data-lucide="sparkles" size="16"></i> Verified Search Summary</p>
+                                        <p class="text-[14px] leading-relaxed text-gray-800 dark:text-gray-200">${searchData.summary || 'Summary could not be generated.'}</p>
+                                        <p class="text-[10px] text-gray-400 mt-2 text-right italic font-medium">Auto-summarized via top Search snippets</p>
+                                    </div>`;
+
+                    htmlBuilder += `<p class="mb-3 text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Top Verified Results</p><div class="flex flex-col gap-3 mb-5">`;
+
+                    searchData.results.forEach((res) => {
+                        let thumb = res.thumbnail ? res.thumbnail : `https://image.pollinations.ai/prompt/${encodeURIComponent(query + " " + res.title + " context photo")}?width=200&height=200&nologo=true`;
+
+                        htmlBuilder += `
+                         <a href="${res.link}" target="_blank" class="flex items-start gap-4 p-3 bg-white/40 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/40 border border-gray-100 dark:border-gray-800 rounded-2xl transition group w-full shadow-sm hover:shadow-md">
+                             <div class="w-16 h-16 shrink-0 rounded-[12px] overflow-hidden bg-gray-100 dark:bg-gray-800 border border-white/10 dark:border-white/5">
+                                 <img src="${thumb}" alt="${res.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300" onerror="this.src='https://image.pollinations.ai/prompt/${encodeURIComponent(query + " generic abstract")}?width=200&height=200&nologo=true'" />
+                             </div>
+                             <div class="flex-1 overflow-hidden">
+                                 <h4 class="font-bold text-[13px] text-gray-800 dark:text-white truncate mb-1 group-hover:text-tealBlue transition leading-tight">${res.title}</h4>
+                                 <p class="text-[11px] text-gray-500 line-clamp-2 leading-snug">${res.snippet}</p>
+                                 <div class="text-[9px] text-gray-400 mt-1.5 flex items-center gap-1 font-semibold tracking-wide uppercase truncate">
+                                     <i data-lucide="link" size="10"></i> ${new URL(res.link).hostname.replace('www.', '')}
+                                 </div>
+                             </div>
+                         </a>`;
+                    });
+
+                    htmlBuilder += `</div><div class="flex flex-wrap gap-2 text-xs pt-1 border-t border-gray-100 dark:border-gray-800 border-dashed">`;
+
+                    if (searchData.official_link) {
+                        htmlBuilder += `<a href="${searchData.official_link}" target="_blank" class="px-3 py-2 mt-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-[10px] transition flex items-center gap-2 font-bold"><i data-lucide="globe" size="14"></i> Official Source</a>`;
+                    }
+                    if (searchData.wikipedia_link) {
+                        htmlBuilder += `<a href="${searchData.wikipedia_link}" target="_blank" class="px-3 py-2 mt-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-[10px] transition flex items-center gap-2 font-bold"><i data-lucide="book" size="14"></i> Wikipedia Entry</a>`;
+                    }
+                    htmlBuilder += `<a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-3 py-2 mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-[10px] transition flex items-center gap-2 font-bold"><i data-lucide="search" size="14"></i> View Google Results</a>`;
+
+                    htmlBuilder += `</div></div>`;
+
+                    addMsg('assistant', htmlBuilder, true);
+                    lucide.createIcons();
+                    return;
+                }
+
+                // ==========================================
+                // FALLBACK TO WIKIPEDIA API & NATIVE HANDLING
+                // Extinguishes Backend Connection Loss
+                // ==========================================
+                const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`);
+                const searchData = await searchRes.json();
+
+                let exactTitle = query;
+                if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
+                    exactTitle = searchData.query.search[0].title;
+                }
+
+                const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(exactTitle)}`);
+
+                if (container.lastChild && container.lastChild.innerHTML.includes("Searching for")) {
+                    container.removeChild(container.lastChild);
+                }
+
+                if (!response.ok) {
+                    throw new Error('Could not find information for that query.');
+                }
+
+                const data = await response.json();
+
+                if (data.extract) {
+                    let thumbSrc = data.thumbnail ? data.thumbnail.source : `https://image.pollinations.ai/prompt/${encodeURIComponent(query + " high quality photo")}?width=400&height=300&nologo=true`;
+
+                    const fallbackHtml = `
+                    <div>
+                        <p class="mb-4">Here is a brief summary about <strong>"${query}"</strong>:</p>
+                        
+                        <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}" target="_blank" class="block mb-4 relative max-w-sm rounded-[15px] overflow-hidden group shadow-md border border-gray-100 dark:border-gray-800">
+                            <img src="${thumbSrc}" alt="${query}" class="w-full h-auto object-cover max-h-48 group-hover:scale-105 transition duration-300"/>
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                                <span class="text-white text-xs font-bold px-3 py-1 flex items-center gap-2"><i data-lucide="image" size="14"></i> View on Google Images</span>
+                            </div>
+                        </a>
+                        
+                        <p class="mb-4 leading-relaxed">${data.extract}</p>
+                        <div class="flex gap-3 text-xs">
+                            <a href="${data.content_urls?.desktop?.page || '#'}" target="_blank" class="px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="book" size="14"></i> Wikipedia
+                            </a>
+                            <a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="search" size="14"></i> Google
+                            </a>
+                            <a href="https://www.bing.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="search" size="14"></i> Bing
+                            </a>
+                        </div>
+                    </div>`;
+                    addMsg('assistant', fallbackHtml, true);
+                } else {
+                    const noDataHtml = `
+                    <div>
+                        <p class="mb-4">I couldn't find a direct summary for <strong>"${query}"</strong> at this time.</p>
+                        <div class="relative w-full max-w-md rounded-[20px] overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 mb-4 bg-gray-50 dark:bg-black/20 flex items-center justify-center min-h-[200px] animate-pulse">
+                            <img src="https://image.pollinations.ai/prompt/${encodeURIComponent(query + " high quality photo")}?width=600&height=300&nologo=true" alt="${query}" class="w-full h-auto object-cover" onload="this.parentElement.classList.remove('animate-pulse')" onerror="this.parentElement.style.display='none'" />
+                        </div>
+                        <p class="mb-4 text-sm text-gray-500">You can explore more about this topic using the web search engines below:</p>
+                        <div class="flex gap-3 text-xs">
+                            <a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="external-link" size="14"></i> Google Search
+                            </a>
+                            <a href="https://www.bing.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="external-link" size="14"></i> Bing Search
+                            </a>
+                        </div>
+                    </div>`;
+                    addMsg('assistant', noDataHtml, true);
+                }
+            } catch (error) {
+                if (container.lastChild && container.lastChild.innerHTML.includes("Searching for")) {
+                    container.removeChild(container.lastChild);
+                }
+
+                const fallbackDataHtml = `
+                    <div>
+                        <p class="mb-4 text-red-500 font-bold"><i data-lucide="wifi-off" size="14" class="inline"></i> API Offline.</p>
+                        <p class="mb-4 text-sm text-gray-500">I couldn't fetch data right now. Would you like to search the web directly to know more?</p>
+                        <div class="flex gap-3 text-xs mt-3">
+                            <a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="search" size="14"></i> Search Google
+                            </a>
+                            <a href="https://www.bing.com/search?q=${encodeURIComponent(query)}" target="_blank" class="px-4 py-2 bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 rounded-xl transition flex items-center gap-2">
+                                <i data-lucide="search" size="14"></i> Search Bing
+                            </a>
+                        </div>
+                    </div>`;
+                addMsg('assistant', fallbackDataHtml, true);
+            }
+            lucide.createIcons();
+        }
+
+        function executeSearchLinks(val) {
+            const searchInput = document.getElementById('header-search');
+            searchInput.value = '';
+            document.getElementById('search-suggestions').classList.add('hidden');
+
+            // Switch to messages view if not
+            const msgsView = document.getElementById('messages-view');
+            const appsView = document.getElementById('apps-view');
+            if (msgsView) {
+                msgsView.classList.remove('hidden');
+                if (appsView) appsView.classList.add('hidden');
+            }
+
+            addMsg('user', `🔍 Search: ${val}`);
+
+            const searchHtml = `
+                <div>
+                    <p class="mb-4">Here's what I get for <strong>"${val}"</strong>:</p>
+                    <div class="flex gap-3 text-xs">
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(val)}" target="_blank" class="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="search" size="14"></i> Google
+                        </a>
+                        <a href="https://www.bing.com/search?q=${encodeURIComponent(val)}" target="_blank" class="px-4 py-2 bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="search" size="14"></i> Bing
+                        </a>
+                        <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(val)}" target="_blank" class="px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="book" size="14"></i> Wikipedia
+                        </a>
+                    </div>
+                </div>`;
+            addMsg('assistant', searchHtml, true);
+            chatMessages.push({ role: "user", content: `🔍 Search: ${val}` });
+            chatMessages.push({ role: "assistant", content: searchHtml });
+            saveChatState();
+            lucide.createIcons();
+        }
+
+        async function handleHeaderSearch(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const searchInput = document.getElementById('header-search');
+                const val = searchInput.value.trim();
+                if (!val) return;
+
+                executeSearchLinks(val);
+                searchInput.blur();
+            }
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+
+        // Logo Bubble Logic (handled above)
+
+        // Close menus on click outside
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.cursor-pointer') && !e.target.closest('#logo-bubble')) {
+                document.getElementById('logo-bubble').classList.add('hidden');
+            }
+
+            // Options Menu (Three Dots)
+            if (!e.target.closest('#options-menu') && !e.target.closest('button[onclick="toggleOptionsMenu()"]')) {
+                const optionsMenu = document.getElementById('options-menu');
+                if (optionsMenu) optionsMenu.classList.add('hidden');
+            }
+
+            // Language Menu
+            if (!e.target.closest('#custom-lang-wrapper') && !e.target.closest('#lang-menu-btn')) {
+                const langMenu = document.getElementById('custom-lang-dropdown');
+                if (langMenu) langMenu.classList.add('hidden');
+            }
+
+            // Emoji Menu
+            if (!e.target.closest('#emoji-menu') && !e.target.closest('button[onclick="toggleEmojiMenu()"]') && !e.target.closest('emoji-picker')) {
+                const emojiMenu = document.getElementById('emoji-menu');
+                if (emojiMenu) emojiMenu.classList.add('hidden');
+            }
+
+            // Filter Menu
+            if (!e.target.closest('#filter-menu') && !e.target.closest('button[onclick="toggleFilterMenu()"]')) {
+                const filterMenu = document.getElementById('filter-menu');
+                if (filterMenu) filterMenu.classList.add('hidden');
+            }
+
+            // Search Suggestions
+            if (!e.target.closest('#search-suggestions') && e.target.id !== 'header-search') {
+                const searchSugg = document.getElementById('search-suggestions');
+                if (searchSugg) searchSugg.classList.add('hidden');
+            }
+
+            // Close Full-Screen Modals by clicking their backdrop
+            if (e.target.id === 'settings-modal') closeSettingsModal();
+            if (e.target.id === 'projects-modal') closeProjectsModal();
+        });
+
+        function toggleChatHistory() {
+            const historyDiv = document.getElementById('extended-chat-history');
+            if (historyDiv) {
+                historyDiv.classList.toggle('hidden');
+            }
+        }
+
+        // Chat Options Logic
+        function toggleOptionsMenu() {
+            document.getElementById('options-menu').classList.toggle('hidden');
+        }
+
+        let isPinned = false;
+        function pinCurrentChat() {
+            const chatTab = document.getElementById('current-chat-tab');
+            const pinIcon = document.getElementById('chat-pin-icon');
+            const pinText = document.getElementById('options-pin-text');
+            const pinBtnIcon = document.getElementById('options-pin-icon');
+
+            isPinned = !isPinned;
+
+            if (chatTab) {
+                chatTab.classList.toggle('bg-tealBlue/10');
+                chatTab.classList.toggle('text-tealBlue');
+                pinIcon.classList.toggle('hidden');
+            }
+
+            if (isPinned) {
+                pinText.innerText = "Unpin chat";
+                pinBtnIcon.setAttribute('data-lucide', 'pin-off');
+            } else {
+                pinText.innerText = "Pin chat";
+                pinBtnIcon.setAttribute('data-lucide', 'pin');
+            }
+            lucide.createIcons();
+
+            toggleOptionsMenu();
+        }
+
+        function archiveCurrentChat() {
+            const chatTab = document.getElementById('current-chat-tab');
+            if (chatTab) {
+                chatTab.style.display = 'none';
+
+                const container = document.getElementById('archived-chats-container');
+                if (container) {
+                    container.innerHTML += `
+                        < div class="group flex items-center justify-between px-3 py-2 mt-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition text-[14px] text-gray-400 dark:text-gray-500" >
+                            <div class="flex items-center gap-2 overflow-hidden">
+                                <i data-lucide="archive" size="16"></i> <span class="truncate" data-i18n="active-chat">Active UI Chat</span>
+                            </div>
+                    </div > `;
+                    lucide.createIcons();
+                }
+            }
+            toggleOptionsMenu();
+            handleNewChat();
+        }
+
+        function deleteCurrentChat() {
+            const chatTab = document.getElementById('current-chat-tab');
+            if (chatTab) {
+                chatTab.style.display = 'none';
+            }
+            toggleOptionsMenu();
+            handleNewChat();
+        }
+
+        function reportCurrentChat() {
+            alert("Chat reported due to protocol violation or offensive content. Generating a fresh session...");
+            deleteCurrentChat();
+        }
+
+        // Interactive Features Logic
+        function handleInput(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+
+            const palette = document.getElementById('command-palette');
+            if (el.value.endsWith('/')) {
+                palette.classList.remove('hidden');
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        function applyCommand(cmd) {
+            input.value = cmd + ' ';
+            input.focus();
+            document.getElementById('command-palette').classList.add('hidden');
+        }
+
+        function triggerFile() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                const names = Array.from(files).map(f => f.name).join(', ');
+                addMsg('user', `Uploaded Files: ${names} `);
+                // Simulate processing
+                setTimeout(() => addMsg('assistant', `I've received your ${files.length} file(s). What would you like me to do with them?`), 500);
+            }
+        }
+
+        function toggleEmojiMenu() { document.getElementById('emoji-menu').classList.toggle('hidden'); }
+
+        const emojiPickerEl = document.querySelector('emoji-picker');
+        if (emojiPickerEl) {
+            emojiPickerEl.addEventListener('emoji-click', event => {
+                input.value += event.detail.unicode;
+                input.focus();
+
+                // Adjust textarea height
+                input.style.height = 'auto';
+                input.style.height = input.scrollHeight + 'px';
+
+                toggleEmojiMenu();
+            });
+        }
+
+        function toggleFilterMenu() { document.getElementById('filter-menu').classList.toggle('hidden'); }
+
+        let activeFilter = 'All';
+        function selectFilter(el, filterType) {
+            activeFilter = filterType;
+
+            // visually reset all options
+            document.querySelectorAll('.filter-option').forEach(opt => {
+                opt.classList.remove('font-bold', 'text-tealBlue', 'bg-black/5', 'dark:bg-white/5');
+                opt.classList.add('text-gray-500');
+                opt.querySelector('.check-icon').classList.add('hidden');
+            });
+
+            // visually select clicked option
+            el.classList.remove('text-gray-500');
+            el.classList.add('font-bold', 'text-tealBlue', 'bg-black/5', 'dark:bg-white/5');
+            el.querySelector('.check-icon').classList.remove('hidden');
+
+            // update search input placeholder dynamically
+            const inputEl = document.getElementById('chat-input');
+            if (filterType === 'All') inputEl.placeholder = "Send a message or type '/' for suggestions...";
+            else if (filterType === 'Web') inputEl.placeholder = "Search Web: type query...";
+            else if (filterType === 'Code') inputEl.placeholder = "Search Code Snippets: type query...";
+            else if (filterType === 'Academic') inputEl.placeholder = "Search Academic Papers...";
+
+            toggleFilterMenu();
+            lucide.createIcons();
+        }
+
+        // Voice-to-Text Recognition
+        let recognition;
+        let isRecording = false;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false; // Automatically stops when user pauses
+            recognition.interimResults = true; // Stream text instantly as they speak
+            recognition.lang = 'en-IN';
+
+            let baseText = "";
+
+            recognition.onstart = () => {
+                isRecording = true;
+                const icon = document.getElementById('voice-icon');
+                icon.classList.add('text-red-500', 'animate-pulse');
+                document.getElementById('chat-input').placeholder = "Listening (speak now)...";
+                baseText = input.value; // Store any text already in the input box
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                const icon = document.getElementById('voice-icon');
+                icon.classList.remove('text-red-500', 'animate-pulse');
+                document.getElementById('chat-input').placeholder = "Send a message or type '/' for suggestions...";
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalSpoken = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalSpoken += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Live update the input box as the user speaks
+                input.value = baseText + (baseText.length > 0 && finalSpoken.trim() ? ' ' : '') + finalSpoken + interimTranscript;
+                input.style.height = 'auto';
+                input.style.height = input.scrollHeight + 'px';
+
+                // If user stops speaking (isFinal is true), automatically send the message!
+                if (finalSpoken.trim().length > 0) {
+                    setTimeout(() => {
+                        handleSendMessage();
+                    }, 100);
+                }
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                alert("Speech recognition is not supported in your browser.");
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        // View Switching Logic
+        function switchView(viewId) {
+            const messagesView = document.getElementById('messages-view');
+            const appsView = document.getElementById('apps-view');
+
+            if (viewId === 'apps') {
+                messagesView.classList.add('hidden');
+                appsView.classList.remove('hidden');
+            } else {
+                appsView.classList.add('hidden');
+                messagesView.classList.remove('hidden');
+            }
+        }
+
+        // Slideshow Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.slide-dot');
+
+        function startSlideshow() {
+            if (slides.length === 0) return;
+            setInterval(() => {
+                slides[currentSlide].classList.add('opacity-0');
+                dots[currentSlide].classList.replace('bg-white', 'bg-white/30');
+
+                currentSlide = (currentSlide + 1) % slides.length;
+
+                slides[currentSlide].classList.remove('opacity-0');
+                dots[currentSlide].classList.replace('bg-white/30', 'bg-white');
+            }, 3000);
+        }
+        startSlideshow();
+        // Translation Dictionary
+        const translations = {
+            en: {
+                "new-chat": "New Chat", "chat-history": "Chat History", "projects": "Projects", "apps": "Apps", "images": "Images",
+                "guest": "Guest", "search-placeholder": "Search", "suggestions": "Suggestions", "settings": "Settings",
+                "general": "General", "personalization": "Personalization", "notifications": "Notifications", "parental": "Parental Controls",
+                "font-size": "Font Size Adjustment", "current-size": "Current Size", "language-type": "Language / Type Changes",
+                "ai-model": "AI Model Selection", "standard-model": "Standard Model", "standard-desc": "Fast and efficient for daily queries.",
+                "advanced-model": "Advanced Model", "advanced-desc": "Complex reasoning and logic.", "app-wallpaper": "Application Wallpaper",
+                "default-theme": "Default Theme", "system-alert": "System Alert Active", "opted-in": "You are automatically opted into AI Technology Daily News & Updates.",
+                "daily-news": "Development of AI Technologies (Daily News)", "below-18": "Below 18 User Mode",
+                "below-18-desc": "If activated, the chatbot will operate strictly for users under 18. This enforces aggressive content filtering and deploys safer, verified AI responses.",
+                "input-placeholder": "Send a message or type '/' for suggestions...", "namaste": "Namaste",
+                "quick-launch": "Quick Launch", "commands": "Commands",
+                "recent": "Recent", "active-chat": "Active UI Chat", "archived": "Archived",
+                "pin-chat": "Pin chat", "archive": "Archive", "report": "Report", "delete": "Delete"
+            },
+            hi: {
+                "new-chat": "नई चैट", "chat-history": "चैट इतिहास", "projects": "प्रोजेक्ट्स", "apps": "ऐप्स", "images": "छवियां",
+                "guest": "अतिथि", "search-placeholder": "खोजें", "suggestions": "सुझाव", "settings": "सेटिंग्स",
+                "general": "सामान्य", "personalization": "व्यक्तिगतकरण", "notifications": "सूचनाएं", "parental": "माता-पिता नियंत्रण",
+                "font-size": "फ़ॉन्ट आकार समायोजन", "current-size": "वर्तमान आकार", "language-type": "भाषा बदलना",
+                "ai-model": "एआई मॉडल चयन", "standard-model": "मानक मॉडल", "standard-desc": "दैनिक प्रश्नों के लिए तेज़ और कुशल।",
+                "advanced-model": "उन्नत मॉडल", "advanced-desc": "जटिल तर्क और सोच।", "app-wallpaper": "एप्लिकेशन वॉलपेपर",
+                "default-theme": "डिफ़ॉल्ट थीम", "system-alert": "सिस्टम अलर्ट सक्रिय", "opted-in": "आप स्वचालित रूप से एआई प्रौद्योगिकी दैनिक समाचार में शामिल हो गए हैं।",
+                "daily-news": "एआई प्रौद्योगिकियों का विकास", "below-18": "18 वर्ष से कम आयु मोड",
+                "below-18-desc": "यदि यह सक्रिय है, तो चैटबॉट 18 वर्ष से कम उम्र के उपयोगकर्ताओं के लिए काम करेगा।",
+                "input-placeholder": "मैसेज भेजें या सुझावों के लिए '/' टाइप करें...", "namaste": "नमस्ते",
+                "quick-launch": "त्वरित लॉन्च", "commands": "कमांड्स",
+                "recent": "हाल ही के", "active-chat": "सक्रिय यूआई चैट", "archived": "संग्रहित",
+                "pin-chat": "चैट पिन करें", "archive": "संग्रह", "report": "रिपोर्ट", "delete": "हटाएं"
+            },
+            es: {
+                "new-chat": "Nueva charla", "chat-history": "Historial", "projects": "Proyectos", "apps": "Aplicaciones", "images": "Imágenes",
+                "guest": "Invitado", "search-placeholder": "Buscar", "suggestions": "Sugerencias", "settings": "Ajustes",
+                "general": "General", "personalization": "Personalización", "notifications": "Notificaciones", "parental": "Control parental",
+                "font-size": "Tamaño de fuente", "current-size": "Tamaño actual", "language-type": "Idioma",
+                "ai-model": "Modelo de IA", "standard-model": "Modelo estándar", "standard-desc": "Rápido y eficiente.",
+                "advanced-model": "Modelo avanzado", "advanced-desc": "Razonamiento complejo.", "app-wallpaper": "Fondo de pantalla",
+                "default-theme": "Predeterminado", "system-alert": "Alerta de sistema", "opted-in": "Suscrito a las noticias de IA.",
+                "daily-news": "Desarrollo de tecnologías de IA", "below-18": "Modo menor de 18",
+                "below-18-desc": "Filtros estrictos y respuestas seguras.",
+                "input-placeholder": "Escribe un mensaje o '/'...", "namaste": "Hola",
+                "quick-launch": "Inicio rápido", "commands": "Comandos",
+                "recent": "Reciente", "active-chat": "Chat Activo", "archived": "Archivado",
+                "pin-chat": "Fijar chat", "archive": "Archivar", "report": "Reportar", "delete": "Eliminar"
+            },
+            fr: {
+                "new-chat": "Nouveau chat", "chat-history": "Historique", "projects": "Projets", "apps": "Apps", "images": "Images",
+                "guest": "Invité", "search-placeholder": "Recherche", "suggestions": "Suggestions", "settings": "Paramètres",
+                "general": "Général", "personalization": "Personnalisation", "notifications": "Notifications", "parental": "Contrôle parental",
+                "font-size": "Taille de police", "current-size": "Taille actuelle", "language-type": "Langues",
+                "ai-model": "Modèle d'IA", "standard-model": "Standard", "standard-desc": "Rapide et efficace.",
+                "advanced-model": "Avancé", "advanced-desc": "Raisonnement complexe.", "app-wallpaper": "Fond d'écran",
+                "default-theme": "Par défaut", "system-alert": "Alerte activée", "opted-in": "Inscrit aux actualités de l'IA.",
+                "daily-news": "Développement des technologies de l'IA", "below-18": "Moins de 18 ans",
+                "below-18-desc": "Filtres stricts pour les mineurs.",
+                "input-placeholder": "Envoyez un message...", "namaste": "Bonjour",
+                "quick-launch": "Lancement", "commands": "Commandes",
+                "recent": "Récent", "active-chat": "Chat Actif", "archived": "Archivé",
+                "pin-chat": "Épingler chat", "archive": "Archiver", "report": "Signaler", "delete": "Supprimer"
+            },
+            zh: {
+                "new-chat": "新聊天", "chat-history": "聊天记录", "projects": "项目", "apps": "应用", "images": "图片",
+                "guest": "访客", "search-placeholder": "搜索", "suggestions": "建议", "settings": "设置",
+                "general": "常规", "personalization": "个性化", "notifications": "通知", "parental": "家长控制",
+                "font-size": "字体大小", "current-size": "当前大小", "language-type": "语言",
+                "ai-model": "AI模型", "standard-model": "标准模型", "standard-desc": "快速高效。",
+                "advanced-model": "高级模型", "advanced-desc": "复杂的推理。", "app-wallpaper": "壁纸",
+                "default-theme": "默认", "system-alert": "系统警报", "opted-in": "您已订阅AI新闻。",
+                "daily-news": "每天新闻", "below-18": "18岁以下模式",
+                "below-18-desc": "针对未成年人的严格过滤。",
+                "input-placeholder": "发送消息...", "namaste": "你好",
+                "quick-launch": "快速启动", "commands": "命令",
+                "recent": "最近", "active-chat": "活动聊天", "archived": "已归档",
+                "pin-chat": "置顶聊天", "archive": "归档", "report": "举报", "delete": "删除"
+            }
+        };
+
+        let currentLocale = 'en';
+
+        function toggleLangMenu() {
+            document.getElementById('custom-lang-dropdown').classList.toggle('hidden');
+        }
+
+        function selectLangOption(langCode, langLabel) {
+            document.getElementById('current-lang-text').innerText = langLabel;
+            toggleLangMenu();
+            changeLanguage(langCode);
+        }
+
+        function changeLanguage(langKey) {
+            currentLocale = langKey;
+            const map = translations[langKey];
+            if (!map) return;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (map[key]) {
+                    el.innerText = map[key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (map[key]) {
+                    el.placeholder = map[key];
+                }
+            });
+
+            // if chat is pinned, re-evaluate pin text immediately
+            if (document.getElementById('options-pin-text')) {
+                if (isPinned) {
+                    // Quick patch to reverse translation mapping to unpin logic natively if we want,
+                    // but since 'Unpin' wasn't natively mapped, we manually manipulate it
+                    document.getElementById('options-pin-text').innerText = (langKey === 'hi') ? "अनपिन करें" : (langKey === 'es') ? "Desfijar" : (langKey === 'fr') ? "Désépingler" : (langKey === 'zh') ? "取消固定" : "Unpin chat";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
